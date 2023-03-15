@@ -66,11 +66,36 @@ module Mastermind
             win
           end
         end
+        lose
       end
     end
 
     def win
-    
+      if player_role == 1
+      puts "Computer couldn't guess the code. You win!"
+      elsif player_role == 2
+        puts "You guessed the code! You win!"
+      end
+
+      play_again
     end
-  end 
+
+    def lose
+      if player_role == 1
+        puts "Computer guessed the code. You lose."
+      elseif player_role == 2
+        puts "You ran out of guesses. You lose."
+      end
+
+      play_again
+    end
+  end
+  
+  def play_again
+    puts "Do you want to play again? Y/N"
+    answer = gets.chomp
+
+    if answer = "Y"
+      new_game
+    end 
 end
