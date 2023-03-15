@@ -1,8 +1,5 @@
 module Mastermind
   class Player
-    def initialize(name, is_guesser)
-      @name, @is_guesser = name, is_guesser
-    end
 
     def guess
       puts " Type your guess of 4 pins then press enter. " +
@@ -12,18 +9,19 @@ module Mastermind
   end
 
   class Computer < Player
+    colors = ["R", "B", "Y", "G", "P", "O"]
+
     def create_code
       @code = array.new()
 
       4.times do
-        code.push(rand(5))
+        code.push(colors[rand(5)])
       end
       code
     end
   end
 
   class Board
-    colors = ["R", "B", "Y", "G", "P", "O"]
     def initialize(code)
       @code = code
     end
@@ -40,8 +38,14 @@ module Mastermind
           result.push("X")
         end
       end
-
+        display(result)
         result
+    end
+
+    private
+    
+    def display(result)
+      puts "1) #result[0] 2) #result[1] 3) #result[2] 4) #result[3]"
     end
   end
 
@@ -50,14 +54,12 @@ module Mastermind
       puts "Do you want to make the code (1) or guess the code (2)? Type the number then press enter."
       player_role = gets.chomp
       turn_count = 1
+      @player = Player.new()
+      @computer = Computer.new()
 
       if player_role == 1
-        @player = Player.new("Player", false)
-        @computer = Computer.new("Computer", true)
-      elsif player_role = 2
-        @player = Player.new("Player", true)
-        @computer = Computer.new("Computer", false)
 
+      elsif player_role = 2
         @board = Board.new(@computer.create_code)
 
         until(turn_count > 12)
