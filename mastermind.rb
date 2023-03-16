@@ -2,20 +2,56 @@ module Mastermind
   class Player
 
     def guess
-      puts " Type your guess of 4 pins then press enter. " +
+      puts "Type your guess of 4 pins then press enter. " +
       "Colors are R, B, Y, G, P, O. Type without spaces."
       guess =  gets.chomp.split("")
+    end
+
+    def create_code
+      puts "Type your code of 4 pins then press enter. " +
+      "Colors are R, B, Y, G, P, O. Type without spaces."
+      code =  gets.chomp.split("")
     end
   end
 
   class Computer < Player
+    def initialize
+      @colors = ["R", "B", "Y", "G", "P", "O"]
+      @previous_guess = Array.new
+    end
 
+    def guess(previous_result)
+      right_color = Array.new
+      guess = Array.new(4)
+
+      previous_result.each_with_index do |pin, index|
+        if pin == "W"
+          right_color.push(@previous_guess[index])
+        end
+      end
+
+      previous_result.each_with_index do |pin, index|
+        if pin == "C"
+          guess[index] = @previous_guess[index]
+        elsif pin == "W"
+          guess[index] = @colors.sample
+        else
+          if right_color[0]
+            guess[index] = right_color[0]
+            right_color.shift
+          else
+            guess[index] = @colors.sample
+          end
+        end
+      end
+      @previous_guess = guess
+      guess
+    end
     def create_code
-      colors = ["R", "B", "Y", "G", "P", "O"]
       @code = Array.new()
 
       4.times do
-        color = colors.sample
+        color = @colors.sample
         @code.push(color)
       end
       @code
@@ -70,7 +106,16 @@ module Mastermind
       @computer = Computer.new()
 
       if @player_role == 1
-
+        @board = Board.new(@player.create_code)
+        result = Array.new(4, "x")
+        until(turn_count > 12)
+          result = @board.check_answer(@computer.guess(result))
+          if result.all?("C")
+            lose
+          end
+          turn_count += 1
+        end
+        win
       elsif @player_role == 2
         @board = Board.new(@computer.create_code)
 
@@ -79,6 +124,7 @@ module Mastermind
           if result.all?("C")
             win
           end
+          turn_count += 1
         end
         lose
       end
