@@ -28,15 +28,26 @@ module Mastermind
     end
 
     def check_answer(guess)
-      result = Array.new
+      changed_code =  Array.new
+
+      @code.each do |pin|
+        changed_code.push(pin) 
+      end
+
+      result = Array.new(4, "x")
 
       guess.each_with_index do |pin, index|
         if pin == @code[index]
-          result.push("C")
-        elsif @code.any?(pin)
-          result.push("W")
-        else
-          result.push("X")
+          result[index] = "C"
+          changed_code.slice!(changed_code.index(pin))
+        end
+      end
+
+
+      guess.each_with_index do |pin, index|
+        if changed_code.any?(pin)
+          result[index] = "W"
+          changed_code.slice!(changed_code.index(pin))
         end
       end
         display(result)
@@ -64,7 +75,6 @@ module Mastermind
         @board = Board.new(@computer.create_code)
 
         until(turn_count > 12)
-          puts "reaches until loop"
           result = @board.check_answer(@player.guess)
           if result.all?("C")
             win
@@ -87,13 +97,12 @@ module Mastermind
     def lose
       if @player_role == 1
         puts "Computer guessed the code. You lose."
-      elseif @player_role == 2
+      elsif @player_role == 2
         puts "You ran out of guesses. You lose."
       end
 
       play_again
     end
-  end
   
   def play_again
     puts "Do you want to play again? Y/N"
@@ -103,7 +112,7 @@ module Mastermind
       new_game
     end 
   end
+  end
   game = Game.new
   game.new_game
 end
-
